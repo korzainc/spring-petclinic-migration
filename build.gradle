@@ -9,43 +9,40 @@ repositories {
 }
 
 dependencies {
-    implementation 'jakarta.xml.bind:jakarta.xml.bind-api:2.3.3'
-    implementation 'jakarta.inject:jakarta.inject-api:1.0.3'
-    implementation platform('org.springframework.boot:spring-boot-starter-parent:2.1.18.RELEASE')
+    // Spring Boot 3.x BOM (lifted 2.1.18 -> 2.7 -> 3.x per MIGRATION-POLICY.md §1).
+    implementation platform('org.springframework.boot:spring-boot-starter-parent:3.3.5')
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation ('org.thymeleaf:thymeleaf-spring4:3.0.15.RELEASE') {
-        force = true
-    }
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation ('org.springframework.boot:spring-boot-starter-thymeleaf') {
         exclude(group: 'nz.net.ultraq.thymeleaf', module: 'thymeleaf-layout-dialect')
     }
+    // jakarta namespace APIs (Boot 3 / Jakarta EE 9+). xml.bind + inject moved javax -> jakarta.
+    implementation 'jakarta.xml.bind:jakarta.xml.bind-api'
+    runtimeOnly 'org.glassfish.jaxb:jaxb-runtime'
+    implementation 'jakarta.inject:jakarta.inject-api:2.0.1'
+    // JSR-107 JCache keeps the javax.cache namespace (NOT renamed by Jakarta).
     implementation 'javax.cache:cache-api'
-    implementation 'org.ehcache:ehcache:3.2.2'
+    implementation 'org.ehcache:ehcache:3.10.8'
     implementation 'org.webjars:webjars-locator:0.45'
     implementation 'org.webjars:jquery:2.2.4'
     implementation 'org.webjars:jquery-ui:1.11.4'
     implementation 'org.webjars:bootstrap:3.3.6'
-    runtimeOnly 'org.hsqldb:hsqldb:2.3.5'
-    runtimeOnly 'mysql:mysql-connector-java:5.1.42'
+    runtimeOnly 'org.hsqldb:hsqldb'
+    runtimeOnly 'com.mysql:mysql-connector-j'
     runtimeOnly 'org.springframework.boot:spring-boot-devtools'
-    testImplementation platform('org.springframework.boot:spring-boot-starter-test')
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // Keep the existing JUnit 4 tests running under Boot 3's JUnit Platform.
     testImplementation 'junit:junit'
-    testImplementation 'org.mockito:mockito-core'
-    testImplementation 'org.springframework:spring-test'
-    testImplementation 'org.springframework.boot:spring-boot-test'
-    testImplementation 'org.springframework.boot:spring-boot-test-autoconfigure'
-    testImplementation 'org.hamcrest:hamcrest-library'
-    testImplementation 'org.assertj:assertj-core'
-    testImplementation 'com.jayway.jsonpath:json-path'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
 }
 
 group = 'org.springframework.samples'
 version = '1.5.1'
 description = 'petclinic'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 publishing {
     publications {
@@ -53,6 +50,10 @@ publishing {
             from(components.java)
         }
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 tasks.withType(JavaCompile) {

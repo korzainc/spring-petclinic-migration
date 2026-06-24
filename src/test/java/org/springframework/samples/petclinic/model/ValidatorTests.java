@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validator;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 
 import org.junit.Test;
 import org.springframework.context.i18n.LocaleContextHolder;
